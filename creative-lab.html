@@ -957,7 +957,8 @@ body {
     <div class="modal-title">🔑 OpenAI API Key</div>
     <p class="modal-desc">Enter your OpenAI API key to power the AI Creative Lab. Your key is stored only in your browser's local storage and is never sent to our servers.</p>
     <input type="password" class="modal-input" id="apiKeyInput" placeholder="sk-..." onkeydown="if(event.key==='Enter')saveApiKey()">
-    <p style="font-size:12px;color:var(--gray)">Get your key at <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--blue)">platform.openai.com/api-keys</a></p>
+    <p style="font-size:12px;color:var(--gray);margin-bottom:6px">Get your key at <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--blue)">platform.openai.com/api-keys</a></p>
+    <p style="font-size:11px;color:#d97706;background:#fef3c7;border-radius:8px;padding:8px 10px;">⚠️ Do not use this tool on shared or public computers. Your API key will be saved in browser local storage.</p>
     <div class="modal-actions">
       <button class="modal-btn modal-btn-cancel" onclick="closeApiModal()">Cancel</button>
       <button class="modal-btn modal-btn-save" onclick="saveApiKey()">Save Key</button>
@@ -1079,6 +1080,8 @@ async function callGPT(systemPrompt, userPrompt, jsonMode = false) {
     temperature: 0.85,
     max_tokens: 4096
   };
+  // Angle generation (10 angles with full scripts) needs more tokens
+  if (jsonMode && userPrompt.length > 800) body.max_tokens = 8192;
   if (jsonMode) body.response_format = { type: 'json_object' };
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -1089,7 +1092,7 @@ async function callGPT(systemPrompt, userPrompt, jsonMode = false) {
 
   if (!res.ok) {
     let msg = res.statusText;
-    try { const e = await res.json(); msg = e.error?.message || msg; } catch(_) {}
+    try { const e = await res.json(); msg = e.error?.message || msg; } catch(parseErr) { console.warn('Could not parse error response:', parseErr); }
     throw new Error(`OpenAI API error: ${msg}`);
   }
   const data = await res.json();
