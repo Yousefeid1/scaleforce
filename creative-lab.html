@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Creative Lab — ScaleForce</title>
+<meta name="description" content="AI-powered performance marketing creative lab. Generate ad angles, hooks, scripts, and media buying plans in seconds.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Variables ─────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:   #0B3D91;
+  --blue:   #1A56C4;
+  --mid:    #378ADD;
+  --light:  #E6F1FB;
+  --white:  #FFFFFF;
+  --off:    #F4F7FC;
+  --dark:   #0A1628;
+  --gray:   #6B7A99;
+  --border: rgba(26,86,196,0.12);
+  --shadow: 0 4px 32px rgba(11,61,145,0.10);
+  --r:      14px;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --sidebar-w: 268px;
+}
+
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: var(--font-body);
+  color: var(--dark);
+  background: var(--off);
+  display: flex;
+}
+
+/* ── Sidebar ──────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  height: 100vh;
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0; top: 0;
+  z-index: 100;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+}
+.sidebar-logo {
+  padding: 22px 22px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar-logo a {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 19px;
+  color: var(--white);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.logo-badge {
+  font-size: 9px;
+  background: var(--mid);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.sidebar-nav { flex: 1; padding: 14px 0; }
+.nav-section {
+  padding: 10px 22px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-top: 6px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 22px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: rgba(255,255,255,0.62);
+  font-size: 14px;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+}
+.nav-item:hover { color: var(--white); background: rgba(255,255,255,0.06); }
+.nav-item.active {
+  color: var(--white);
+  background: rgba(55,138,221,0.18);
+  border-left-color: var(--mid);
+}
+.nav-icon { font-size: 17px; width: 22px; text-align: center; }
+.nav-badge {
+  margin-left: auto;
+  font-size: 10px;
+  background: var(--mid);
+  color: white;
+  padding: 1px 7px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+.sidebar-footer {
+  padding: 16px 22px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.api-key-btn {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(55,138,221,0.18);
+  border: 1px solid rgba(55,138,221,0.28);
+  border-radius: 10px;
+  color: rgba(255,255,255,0.75);
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  transition: all 0.2s;
+}
+.api-key-btn:hover { background: rgba(55,138,221,0.32); color: white; }
+.api-dot { width: 8px; height: 8px; border-radius: 50%; background: #ef4444; flex-shrink: 0; }
+.api-dot.set { background: #22c55e; }
+
+/* ── Main ─────────────────────────────────── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.main-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.main-header h1 { font-family: var(--font-head); font-size: 19px; font-weight: 700; color: var(--dark); }
+.main-header p { font-size: 13px; color: var(--gray); margin-top: 1px; }
+.header-actions { margin-left: auto; display: flex; gap: 10px; }
+.back-btn {
+  padding: 8px 16px;
+  background: var(--off);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  text-decoration: none;
+  color: var(--dark);
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.back-btn:hover { background: var(--light); color: var(--blue); }
+.hamburger {
+  display: none;
+  background: var(--off);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* ── Tool Panels ─────────────────────────── */
+.tool-panel { display: none; padding: 28px; animation: fadeIn 0.25s ease; }
+.tool-panel.active { display: block; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Forms ───────────────────────────────── */
+.lab-form {
+  background: var(--white);
+  border-radius: var(--r);
+  padding: 26px;
+  box-shadow: var(--shadow);
+  margin-bottom: 22px;
+}
+.form-title {
+  font-family: var(--font-head);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.form-title .icon {
+  width: 34px; height: 34px;
+  background: var(--light);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px;
+}
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 13px; font-weight: 600; color: var(--dark); }
+.field label span { color: var(--gray); font-weight: 400; font-size: 12px; }
+.field input, .field textarea, .field select {
+  padding: 10px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--dark);
+  background: var(--off);
+  transition: border 0.2s;
+  outline: none;
+}
+.field input:focus, .field textarea:focus, .field select:focus {
+  border-color: var(--blue);
+  background: white;
+}
+.field textarea { resize: vertical; min-height: 78px; }
+.goal-select { display: flex; gap: 10px; }
+.goal-option {
+  flex: 1;
+  padding: 10px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+  background: var(--off);
+  user-select: none;
+}
+.goal-option:hover { border-color: var(--mid); }
+.goal-option.selected { border-color: var(--blue); background: var(--light); color: var(--blue); }
+
+/* ── Run Button ─────────────────────────── */
+.run-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 26px;
+  background: linear-gradient(135deg, var(--blue), var(--navy));
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  margin-top: 18px;
+}
+.run-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(26,86,196,0.35);
+}
+.run-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.btn-spinner {
+  width: 17px; height: 17px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: none;
+}
+.run-btn.loading .btn-spinner { display: block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Agent Steps ─────────────────────────── */
+.agent-steps {
+  background: var(--white);
+  border-radius: var(--r);
+  padding: 22px 26px;
+  box-shadow: var(--shadow);
+  margin-bottom: 22px;
+  display: none;
+}
+.agent-steps.visible { display: block; }
+.agent-steps-title {
+  font-family: var(--font-head);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gray);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.step-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.step-row:last-child { border-bottom: none; }
+.step-icon {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  background: var(--off);
+  color: var(--gray);
+  border: 2px solid var(--border);
+  transition: all 0.3s;
+}
+.step-icon.running { background: var(--light); border-color: var(--blue); }
+.step-icon.done { background: #dcfce7; border-color: #22c55e; color: #16a34a; }
+.step-icon.error { background: #fee2e2; border-color: #ef4444; color: #dc2626; }
+.step-content { flex: 1; }
+.step-name { font-size: 13px; font-weight: 600; color: var(--dark); }
+.step-name.pending { color: var(--gray); }
+.step-desc { font-size: 12px; color: var(--gray); margin-top: 1px; }
+.mini-spin {
+  width: 14px; height: 14px;
+  border: 2px solid var(--border);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ── Progress Bar ────────────────────────── */
+.progress-bar-wrap {
+  background: var(--border);
+  border-radius: 10px;
+  height: 5px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  display: none;
+}
+.progress-bar-wrap.visible { display: block; }
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--mid));
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+/* ── Results ─────────────────────────────── */
+.result-block {
+  background: var(--white);
+  border-radius: var(--r);
+  padding: 26px;
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+}
+.result-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.result-block-title {
+  font-family: var(--font-head);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.result-badge {
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: var(--light);
+  color: var(--blue);
+  font-weight: 700;
+}
+.copy-btn {
+  padding: 7px 13px;
+  background: var(--off);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--dark);
+  font-family: var(--font-body);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.copy-btn:hover { background: var(--light); border-color: var(--blue); color: var(--blue); }
+.copy-btn.copied { background: #dcfce7; border-color: #22c55e; color: #16a34a; }
+
+/* ── Angle Cards ─────────────────────────── */
+.angles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.angle-card {
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.angle-card:hover { border-color: var(--mid); box-shadow: 0 4px 16px rgba(26,86,196,0.08); }
+.angle-card-header {
+  padding: 13px 15px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border-bottom: 1px solid var(--border);
+}
+.type-badge {
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.type-pain    { background: #fee2e2; color: #dc2626; }
+.type-desire  { background: #fef3c7; color: #d97706; }
+.type-fear    { background: #f3e8ff; color: #9333ea; }
+.type-status  { background: #dbeafe; color: #2563eb; }
+.type-curiosity { background: #d1fae5; color: #059669; }
+.angle-name { font-weight: 700; font-size: 13px; color: var(--dark); }
+.angle-card-body { padding: 14px 15px; }
+.angle-section { margin-top: 11px; }
+.angle-section:first-child { margin-top: 0; }
+.angle-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 4px;
+}
+.angle-value { font-size: 13px; color: var(--dark); line-height: 1.6; }
+.hook-text {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--navy);
+  background: var(--light);
+  padding: 8px 11px;
+  border-radius: 8px;
+  border-left: 3px solid var(--blue);
+}
+
+/* ── Hooks Table ─────────────────────────── */
+.hooks-table { width: 100%; border-collapse: collapse; }
+.hooks-table th {
+  background: var(--off);
+  padding: 9px 13px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gray);
+  border-bottom: 2px solid var(--border);
+}
+.hooks-table td {
+  padding: 11px 13px;
+  font-size: 13px;
+  color: var(--dark);
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.hooks-table tr:last-child td { border-bottom: none; }
+.hooks-table tr:hover td { background: var(--off); }
+.num { font-weight: 700; color: var(--gray); width: 36px; }
+.hook-type-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── Script Display ──────────────────────── */
+.script-display { background: var(--off); border-radius: 12px; padding: 20px; }
+.script-section { margin-bottom: 14px; }
+.script-section:last-child { margin-bottom: 0; }
+.script-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 5px;
+}
+.script-text { font-size: 14px; line-height: 1.75; color: var(--dark); white-space: pre-wrap; }
+.full-script-box {
+  background: var(--navy);
+  color: var(--white);
+  border-radius: 12px;
+  padding: 22px;
+  font-size: 14px;
+  line-height: 1.85;
+  white-space: pre-wrap;
+  font-family: var(--font-body);
+  margin-top: 16px;
+}
+
+/* ── Media Plan ──────────────────────────── */
+.media-plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.plan-card { background: var(--off); border-radius: 12px; padding: 18px; }
+.plan-card-title {
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 13px;
+}
+.plan-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-bottom: 9px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.plan-item:last-child { margin-bottom: 0; }
+.pdot {
+  width: 6px; height: 6px;
+  background: var(--blue);
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+/* ── Info / Error boxes ───────────────────── */
+.error-box {
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  padding: 14px 18px;
+  color: #dc2626;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+.info-box {
+  background: var(--light);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  color: var(--navy);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* ── Modal ───────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  align-items: center; justify-content: center;
+  z-index: 1000;
+  display: none;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 32px;
+  width: 460px;
+  max-width: 90vw;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.2);
+}
+.modal-title { font-family: var(--font-head); font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.modal-desc { font-size: 14px; color: var(--gray); line-height: 1.6; margin-bottom: 22px; }
+.modal-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1.5px solid var(--border);
+  border-radius: 11px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  outline: none;
+  margin-bottom: 10px;
+}
+.modal-input:focus { border-color: var(--blue); }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
+.modal-btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  transition: all 0.2s;
+}
+.modal-btn-cancel { background: var(--off); border: 1px solid var(--border); color: var(--dark); }
+.modal-btn-cancel:hover { background: var(--light); }
+.modal-btn-save { background: var(--blue); color: white; }
+.modal-btn-save:hover { background: var(--navy); }
+
+/* ── Toast ───────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 28px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--dark);
+  color: white;
+  padding: 10px 22px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 2000;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── Sidebar overlay (mobile) ──────────── */
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 99;
+}
+.sidebar-overlay.open { display: block; }
+
+/* ── Scrollbar ────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--off); }
+::-webkit-scrollbar-thumb { background: var(--mid); border-radius: 3px; }
+
+/* ── Responsive ──────────────────────── */
+@media (max-width: 940px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .hamburger { display: flex; align-items: center; }
+  .angles-grid { grid-template-columns: 1fr; }
+  .media-plan-grid { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  html, body { overflow: auto; }
+  .main { height: auto; overflow: visible; }
+  body { overflow-x: hidden; }
+}
+@media (max-width: 600px) {
+  .tool-panel { padding: 16px; }
+  .lab-form { padding: 18px; }
+  .result-block { padding: 16px; }
+  .goal-select { flex-direction: column; }
+  .header-actions .back-btn span { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ── Sidebar ─────────────────────────────── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <a href="index.html">
+      <span>ScaleForce</span>
+      <span class="logo-badge">AI Lab</span>
+    </a>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">Workflow Tools</div>
+
+    <div class="nav-item active" data-tool="campaign">
+      <span class="nav-icon">🚀</span>
+      <span>Campaign Builder</span>
+      <span class="nav-badge">AGENT</span>
+    </div>
+    <div class="nav-item" data-tool="hooks">
+      <span class="nav-icon">⚡</span>
+      <span>Hook Factory</span>
+    </div>
+    <div class="nav-item" data-tool="script">
+      <span class="nav-icon">📝</span>
+      <span>Script Studio</span>
+    </div>
+
+    <div class="nav-section">Strategy</div>
+
+    <div class="nav-item" data-tool="mediabuyer">
+      <span class="nav-icon">📊</span>
+      <span>Media Buyer</span>
+    </div>
+    <div class="nav-item" data-tool="iteration">
+      <span class="nav-icon">🔄</span>
+      <span>Iteration Lab</span>
+    </div>
+    <div class="nav-item" data-tool="competitor">
+      <span class="nav-icon">🔍</span>
+      <span>Competitor Intel</span>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="api-key-btn" onclick="showApiModal()">
+      <span class="api-dot" id="apiDot"></span>
+      <span id="apiKeyBtnText">Set OpenAI API Key</span>
+    </button>
+  </div>
+</aside>
+
+<!-- ── Main ────────────────────────────────── -->
+<main class="main">
+
+  <div class="main-header">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <div>
+      <h1 id="toolTitle">🚀 Campaign Builder</h1>
+      <p id="toolDesc">Autonomous AI agent — generates 10 angles, 30 hooks, viral script &amp; media plan</p>
+    </div>
+    <div class="header-actions">
+      <a href="index.html" class="back-btn"><span>← Back to Site</span></a>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- TOOL 1: Campaign Builder                  -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="tool-panel active" id="tool-campaign">
+    <div class="lab-form">
+      <div class="form-title"><span class="icon">✍️</span> Campaign Brief</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Product / Service <span>What are you selling?</span></label>
+          <input type="text" id="c-product" placeholder="e.g. Organic protein powder for women">
+        </div>
+        <div class="field">
+          <label>Target Audience <span>Who are you talking to?</span></label>
+          <input type="text" id="c-audience" placeholder="e.g. Women 25–40, fitness enthusiasts">
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label>Core Problem <span>What pain / desire are you solving?</span></label>
+          <textarea id="c-problem" placeholder="e.g. They struggle to find a protein powder that tastes good, is clean, and actually works without bloating"></textarea>
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label>Campaign Goal</label>
+          <div class="goal-select">
+            <div class="goal-option selected" data-goal="Sales" onclick="selectGoal(this)">💰 Sales</div>
+            <div class="goal-option" data-goal="Leads" onclick="selectGoal(this)">📋 Leads</div>
+            <div class="goal-option" data-goal="Awareness" onclick="selectGoal(this)">📢 Awareness</div>
+          </div>
+        </div>
+      </div>
+      <button class="run-btn" id="campaignRunBtn" onclick="runCampaignAgent()">
+        <div class="btn-spinner"></div>
+        <span>🤖 Run AI Agent</span>
+      </button>
+    </div>
+
+    <!-- Agent progress -->
+    <div class="agent-steps" id="agentSteps">
+      <div class="agent-steps-title">⚡ Agent Progress</div>
+      <div id="stepsList"></div>
+    </div>
+    <div class="progress-bar-wrap" id="progressWrap">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+
+    <div id="campaignResults"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- TOOL 2: Hook Factory                      -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="tool-panel" id="tool-hooks">
+    <div class="lab-form">
+      <div class="form-title"><span class="icon">⚡</span> Hook Factory — 30 High-Converting Hooks</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Product / Service</label>
+          <input type="text" id="h-product" placeholder="e.g. Online fitness coaching">
+        </div>
+        <div class="field">
+          <label>Target Audience</label>
+          <input type="text" id="h-audience" placeholder="e.g. Busy moms who want to lose weight">
+        </div>
+      </div>
+      <button class="run-btn" id="hooksRunBtn" onclick="runHookFactory()">
+        <div class="btn-spinner"></div>
+        <span>⚡ Generate 30 Hooks</span>
+      </button>
+    </div>
+    <div id="hooksResult"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- TOOL 3: Script Studio                     -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="tool-panel" id="tool-script">
+    <div class="lab-form">
+      <div class="form-title"><span class="icon">📝</span> Script Studio — PAS + Storytelling</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Product / Service</label>
+          <input type="text" id="s-product" placeholder="e.g. Online Arabic tutoring app">
+        </div>
+        <div class="field">
+          <label>Target Audience</label>
+          <input type="text" id="s-audience" placeholder="e.g. Arabic diaspora parents">
+        </div>
+        <div class="field">
+          <label>Core Problem</label>
+          <textarea id="s-problem" placeholder="e.g. Their kids are losing their Arabic language connection"></textarea>
+        </div>
+        <div class="field">
+          <label>Tone</label>
+          <select id="s-tone">
+            <option value="conversational, fast-paced">Conversational &amp; Fast-Paced</option>
+            <option value="urgent and emotionally charged">Urgent &amp; Emotional</option>
+            <option value="inspirational and uplifting">Inspirational &amp; Uplifting</option>
+            <option value="funny and entertaining">Funny &amp; Entertaining</option>
+            <option value="educational and authoritative">Educational &amp; Authoritative</option>
+          </select>
+        </div>
+      </div>
+      <button class="run-btn" id="scriptRunBtn" onclick="runScriptStudio()">
+        <div class="btn-spinner"></div>
+        <span>✍️ Write Viral Script</span>
+      </button>
+    </div>
+    <div id="scriptResult"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- TOOL 4: Media Buyer                       -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="tool-panel" id="tool-mediabuyer">
+    <div class="lab-form">
+      <div class="form-title"><span class="icon">📊</span> Media Buyer — Testing &amp; Scaling Framework</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Product / Service</label>
+          <input type="text" id="mb-product" placeholder="e.g. SaaS project management tool">
+        </div>
+        <div class="field">
+          <label>Monthly Budget</label>
+          <select id="mb-budget">
+            <option value="$500–$1,000/month">$500 – $1,000 / month</option>
+            <option value="$1,000–$5,000/month">$1,000 – $5,000 / month</option>
+            <option value="$5,000–$20,000/month" selected>$5,000 – $20,000 / month</option>
+            <option value="$20,000+/month">$20,000+ / month</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Primary KPI</label>
+          <select id="mb-kpi">
+            <option value="ROAS (Return on Ad Spend)">ROAS (Revenue)</option>
+            <option value="CPA (Cost per Acquisition)">CPA (Acquisition)</option>
+            <option value="CPL (Cost per Lead)">CPL (Lead Gen)</option>
+            <option value="CTR (Click-Through Rate)">CTR (Traffic)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Platform</label>
+          <select id="mb-platform">
+            <option value="TikTok Ads">TikTok Ads</option>
+            <option value="Meta (Facebook &amp; Instagram)">Meta (Facebook &amp; Instagram)</option>
+            <option value="TikTok and Meta combined">TikTok &amp; Meta Combined</option>
+          </select>
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label>Your Creatives <span>(one per line)</span></label>
+          <textarea id="mb-creatives" placeholder="Creative 1: Pain-based hook showing gym struggle&#10;Creative 2: Desire-based transformation reveal&#10;Creative 3: Testimonial UGC style&#10;Creative 4: Pattern interrupt with shocking stat&#10;Creative 5: Educational 'Did you know' hook"></textarea>
+        </div>
+      </div>
+      <button class="run-btn" id="mbRunBtn" onclick="runMediaBuyer()">
+        <div class="btn-spinner"></div>
+        <span>📊 Build Testing Plan</span>
+      </button>
+    </div>
+    <div id="mbResult"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- TOOL 5: Iteration Lab                     -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="tool-panel" id="tool-iteration">
+    <div class="lab-form">
+      <div class="form-title"><span class="icon">🔄</span> Iteration Lab — Improve &amp; Evolve</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Product / Service</label>
+          <input type="text" id="i-product" placeholder="e.g. Skincare serum">
+        </div>
+        <div class="field">
+          <label>Best Performing Creative <span>Describe it</span></label>
+          <textarea id="i-winner" placeholder="Hook: 'I used to hate my skin until...' Relatable morning routine opening, product reveal at 20s, testimonial CTA"></textarea>
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label>Performance Data <span>What worked, what didn't</span></label>
+          <textarea id="i-data" placeholder="e.g. CTR: 4.2%, CPA: $12, Hook retention 78%. Drop-off at 8s when product shown. Relatable opener got 3× engagement."></textarea>
+        </div>
+      </div>
+      <button class="run-btn" id="iterRunBtn" onclick="runIterationLab()">
+        <div class="btn-spinner"></div>
+        <span>🔄 Generate Iterations</span>
+      </button>
+    </div>
+    <div id="iterResult"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- TOOL 6: Competitor Intel                  -->
+  <!-- ══════════════════════════════════════════ -->
+  <div class="tool-panel" id="tool-competitor">
+    <div class="lab-form">
+      <div class="form-title"><span class="icon">🔍</span> Competitor Intel — Analyze &amp; Outperform</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Your Product</label>
+          <input type="text" id="ci-product" placeholder="e.g. Budget travel app">
+        </div>
+        <div class="field">
+          <label>Your Audience</label>
+          <input type="text" id="ci-audience" placeholder="e.g. Gen Z travelers 18–28">
+        </div>
+        <div class="field" style="grid-column:1/-1">
+          <label>Competitor Ad <span>Paste script, describe scenes, or paste key elements</span></label>
+          <textarea id="ci-ad" style="min-height:120px" placeholder="Hook: 'I was broke until I downloaded this app...'&#10;Body: Shows person booking cheap flights, cut to beach destination, hotel room...&#10;CTA: 'Download now — first booking 50% off'"></textarea>
+        </div>
+      </div>
+      <button class="run-btn" id="ciRunBtn" onclick="runCompetitorIntel()">
+        <div class="btn-spinner"></div>
+        <span>🔍 Analyze &amp; Outperform</span>
+      </button>
+    </div>
+    <div id="ciResult"></div>
+  </div>
+
+</main>
+
+<!-- ── API Key Modal ──────────────────────────── -->
+<div class="modal-overlay" id="apiModal">
+  <div class="modal">
+    <div class="modal-title">🔑 OpenAI API Key</div>
+    <p class="modal-desc">Enter your OpenAI API key to power the AI Creative Lab. Your key is stored only in your browser's local storage and is never sent to our servers.</p>
+    <input type="password" class="modal-input" id="apiKeyInput" placeholder="sk-..." onkeydown="if(event.key==='Enter')saveApiKey()">
+    <p style="font-size:12px;color:var(--gray);margin-bottom:6px">Get your key at <a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--blue)">platform.openai.com/api-keys</a></p>
+    <p style="font-size:11px;color:#d97706;background:#fef3c7;border-radius:8px;padding:8px 10px;">⚠️ Do not use this tool on shared or public computers. Your API key will be saved in browser local storage.</p>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="closeApiModal()">Cancel</button>
+      <button class="modal-btn modal-btn-save" onclick="saveApiKey()">Save Key</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast ──────────────────────────────────── -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   State
+═══════════════════════════════════════════════ */
+let apiKey = localStorage.getItem('sf_openai_key') || '';
+let selectedGoal = 'Sales';
+
+const TOOL_META = {
+  campaign:   { title: '🚀 Campaign Builder',   desc: 'Autonomous AI agent — generates 10 angles, 30 hooks, viral script & media plan' },
+  hooks:      { title: '⚡ Hook Factory',        desc: 'Generate 30 high-converting hooks using proven psychological triggers' },
+  script:     { title: '📝 Script Studio',       desc: 'Write viral 45-second ad scripts using PAS + Storytelling framework' },
+  mediabuyer: { title: '📊 Media Buyer',         desc: 'Build testing structure, budget allocation, KPIs & kill/scale rules' },
+  iteration:  { title: '🔄 Iteration Lab',       desc: 'Improve winning creatives: 5 iterations, 3 new angles & 2 radical ideas' },
+  competitor: { title: '🔍 Competitor Intel',    desc: 'Analyze competitor ads and generate 5 better versions' }
+};
+
+/* ═══════════════════════════════════════════════
+   Navigation
+═══════════════════════════════════════════════ */
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    setActiveTool(item.dataset.tool);
+    if (window.innerWidth <= 940) closeSidebar();
+  });
+});
+
+function setActiveTool(tool) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+  document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`tool-${tool}`).classList.add('active');
+  document.getElementById('toolTitle').textContent = TOOL_META[tool].title;
+  document.getElementById('toolDesc').textContent  = TOOL_META[tool].desc;
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+/* ═══════════════════════════════════════════════
+   API Key
+═══════════════════════════════════════════════ */
+function updateApiKeyUI() {
+  const dot = document.getElementById('apiDot');
+  const btn = document.getElementById('apiKeyBtnText');
+  if (apiKey) {
+    dot.className = 'api-dot set';
+    btn.textContent = 'API Key: Active ✓';
+  } else {
+    dot.className = 'api-dot';
+    btn.textContent = 'Set OpenAI API Key';
+  }
+}
+function showApiModal() {
+  document.getElementById('apiKeyInput').value = apiKey;
+  document.getElementById('apiModal').classList.add('open');
+  setTimeout(() => document.getElementById('apiKeyInput').focus(), 100);
+}
+function closeApiModal() { document.getElementById('apiModal').classList.remove('open'); }
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  apiKey = key;
+  localStorage.setItem('sf_openai_key', key);
+  updateApiKeyUI();
+  closeApiModal();
+  showToast(key ? '✓ API key saved' : 'API key cleared');
+}
+document.getElementById('apiModal').addEventListener('click', function(e) {
+  if (e.target === this) closeApiModal();
+});
+updateApiKeyUI();
+
+/* ═══════════════════════════════════════════════
+   Goal Selection
+═══════════════════════════════════════════════ */
+function selectGoal(el) {
+  document.querySelectorAll('.goal-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedGoal = el.dataset.goal;
+}
+
+/* ═══════════════════════════════════════════════
+   Toast
+═══════════════════════════════════════════════ */
+function showToast(msg, duration = 2200) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+/* ═══════════════════════════════════════════════
+   OpenAI API
+═══════════════════════════════════════════════ */
+async function callGPT(systemPrompt, userPrompt, jsonMode = false) {
+  if (!apiKey) throw new Error('No API key set. Click "Set OpenAI API Key" in the sidebar.');
+
+  const body = {
+    model: 'gpt-4o',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user',   content: userPrompt   }
+    ],
+    temperature: 0.85,
+    max_tokens: 4096
+  };
+  // Angle generation (10 angles with full scripts) needs more tokens
+  if (jsonMode && userPrompt.length > 800) body.max_tokens = 8192;
+  if (jsonMode) body.response_format = { type: 'json_object' };
+
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+    body: JSON.stringify(body)
+  });
+
+  if (!res.ok) {
+    let msg = res.statusText;
+    try { const e = await res.json(); msg = e.error?.message || msg; } catch(parseErr) { console.warn('Could not parse error response:', parseErr); }
+    throw new Error(`OpenAI API error: ${msg}`);
+  }
+  const data = await res.json();
+  return data.choices[0].message.content;
+}
+
+/* ═══════════════════════════════════════════════
+   Agent Steps (Campaign Builder)
+═══════════════════════════════════════════════ */
+const CAMPAIGN_STEPS = [
+  { id: 'analyze',   name: 'Analyzing Campaign Brief',       desc: 'Understanding product, audience & positioning' },
+  { id: 'angles',    name: 'Generating 10 Marketing Angles', desc: 'Pain, Desire, Fear, Status & Curiosity-based' },
+  { id: 'creatives', name: 'Writing Ad Creatives',           desc: 'Hooks, scripts, visuals & CTAs for all angles' },
+  { id: 'hooks30',   name: 'Generating 30 Power Hooks',      desc: 'Shock, curiosity gap, relatable & bold claims' },
+  { id: 'script',    name: 'Writing Viral PAS Script',       desc: '45-second TikTok/Reels script with storytelling' },
+  { id: 'mediaplan', name: 'Building Media Buyer Plan',      desc: 'Testing structure, budget, KPIs & scale rules' }
+];
+
+function initSteps() {
+  document.getElementById('stepsList').innerHTML = CAMPAIGN_STEPS.map((s, i) => `
+    <div class="step-row" id="srow-${s.id}">
+      <div class="step-icon" id="sicon-${s.id}">${i + 1}</div>
+      <div class="step-content">
+        <div class="step-name pending" id="sname-${s.id}">${s.name}</div>
+        <div class="step-desc">${s.desc}</div>
+      </div>
+      <div id="sspin-${s.id}" style="display:none"><div class="mini-spin"></div></div>
+    </div>
+  `).join('');
+}
+
+function setStep(id, status) {
+  const icon  = document.getElementById(`sicon-${id}`);
+  const name  = document.getElementById(`sname-${id}`);
+  const spin  = document.getElementById(`sspin-${id}`);
+  icon.className = `step-icon ${status}`;
+  name.className = `step-name${status === 'pending' ? ' pending' : ''}`;
+  if (status === 'running') {
+    icon.innerHTML = '<div class="mini-spin"></div>';
+    spin.style.display = 'none';
+  } else if (status === 'done')  { icon.textContent = '✓'; spin.style.display = 'none'; }
+  else if (status === 'error')   { icon.textContent = '✗'; spin.style.display = 'none'; }
+}
+
+function setProgress(pct) { document.getElementById('progressFill').style.width = pct + '%'; }
+
+/* ═══════════════════════════════════════════════
+   TOOL 1: Campaign Builder — Full Agent
+═══════════════════════════════════════════════ */
+async function runCampaignAgent() {
+  if (!checkKey()) return;
+  const product  = v('c-product');
+  const audience = v('c-audience');
+  const problem  = v('c-problem');
+  if (!product || !audience || !problem) { showToast('⚠️ Please fill in all fields'); return; }
+
+  const btn       = document.getElementById('campaignRunBtn');
+  const stepsEl   = document.getElementById('agentSteps');
+  const progressEl = document.getElementById('progressWrap');
+  const resultsEl = document.getElementById('campaignResults');
+
+  setBtn(btn, true);
+  stepsEl.classList.add('visible');
+  progressEl.classList.add('visible');
+  resultsEl.innerHTML = '';
+  initSteps();
+  setProgress(0);
+
+  try {
+    // Step 1 – analyze (brief delay for UX)
+    setStep('analyze', 'running');
+    await sleep(700);
+    setStep('analyze', 'done');
+    setProgress(8);
+
+    // Step 2 – 10 angles (includes creatives)
+    setStep('angles', 'running');
+    const angles = await generateAngles(product, audience, selectedGoal, problem);
+    setStep('angles', 'done');
+    setProgress(30);
+
+    // Step 3 – creatives already embedded in angles
+    setStep('creatives', 'running');
+    await sleep(400);
+    setStep('creatives', 'done');
+    setProgress(48);
+
+    // Step 4 – 30 hooks
+    setStep('hooks30', 'running');
+    const hooks = await generate30Hooks(product, audience);
+    setStep('hooks30', 'done');
+    setProgress(64);
+
+    // Step 5 – viral script
+    setStep('script', 'running');
+    const script = await generateViralScript(product, audience, problem, 'conversational, fast-paced');
+    setStep('script', 'done');
+    setProgress(80);
+
+    // Step 6 – media plan
+    setStep('mediaplan', 'running');
+    const mediaPlan = await generateMediaPlan(product, selectedGoal, angles);
+    setStep('mediaplan', 'done');
+    setProgress(100);
+
+    // Render
+    resultsEl.innerHTML = renderAnglesSection(angles, 'campAngles') +
+                          renderHooksSection(hooks, 'campHooks') +
+                          renderScriptSection(script, 'campScript') +
+                          renderMediaPlanSection(mediaPlan, 'campPlan');
+    resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch (err) {
+    resultsEl.innerHTML = `<div class="error-box">⚠️ ${esc(err.message)}</div>`;
+    CAMPAIGN_STEPS.forEach(s => {
+      if (document.getElementById(`sicon-${s.id}`)?.classList.contains('running'))
+        setStep(s.id, 'error');
+    });
+  } finally {
+    setBtn(btn, false);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   GPT Helper Functions
+═══════════════════════════════════════════════ */
+const SYS_CREATIVE = 'You are a world-class performance marketing creative strategist specialising in TikTok and Instagram Reels. You always return ONLY valid JSON. No markdown, no extra text.';
+const SYS_MEDIABUYER = 'You are a senior performance media buyer with 10+ years managing $50M+ in ad spend on TikTok and Meta. You always return ONLY valid JSON. No markdown, no extra text.';
+
+async function generateAngles(product, audience, goal, problem) {
+  const prompt = `Generate exactly 10 marketing angles for this campaign.
+
+Product: ${product}
+Audience: ${audience}
+Goal: ${goal}
+Problem: ${problem}
+
+Create: 2 Pain-based, 2 Desire-based, 2 Fear-based, 2 Status-based, 2 Curiosity-based.
+
+For EACH angle:
+- type: "Pain" | "Desire" | "Fear" | "Status" | "Curiosity"
+- angle_name: creative name (3–6 words)
+- emotion: core emotion triggered (1–3 words)
+- hook: scroll-stopping hook UNDER 10 WORDS, no period
+- script: 30–60s TikTok/Reels script using Pattern Interrupt, Curiosity Gap, Emotional Hook. Include [visual cues] in brackets.
+- visual: specific visual scenes description (camera, transitions, style)
+- cta: call to action under 10 words
+
+JSON format: { "angles": [ {...}, ... ] }`;
+
+  const raw = await callGPT(SYS_CREATIVE, prompt, true);
+  const data = JSON.parse(raw);
+  return Array.isArray(data.angles) ? data.angles : (Array.isArray(data) ? data : []);
+}
+
+async function generate30Hooks(product, audience) {
+  const prompt = `Generate exactly 30 high-converting TikTok/Reels hooks.
+
+Product: ${product}
+Audience: ${audience}
+
+Breakdown:
+- 8 Shock hooks (surprising, counterintuitive)
+- 8 Curiosity Gap hooks (create information gap, tease)
+- 8 Relatable Scenario hooks (instantly recognisable situation)
+- 6 Bold Claim hooks (strong, specific, credible)
+
+Each hook must be under 10 words. No punctuation at end.
+
+JSON format: { "hooks": [ { "type": "Shock|Curiosity|Relatable|Bold", "hook": "..." }, ... ] }`;
+
+  const raw = await callGPT(SYS_CREATIVE, prompt, true);
+  const data = JSON.parse(raw);
+  return Array.isArray(data.hooks) ? data.hooks : (Array.isArray(data) ? data : []);
+}
+
+async function generateViralScript(product, audience, problem, tone) {
+  const prompt = `Write a viral 45-second TikTok/Reels ad script.
+
+Product: ${product}
+Audience: ${audience}
+Problem: ${problem}
+Tone: ${tone}
+Framework: PAS (Problem-Agitation-Solution) + Storytelling
+
+Requirements:
+- Strong emotional hook in first 2 seconds
+- Clear problem escalation (make it hurt)
+- Relatable first-person story
+- Natural solution reveal (not salesy)
+- Strong CTA
+- Add [PAUSE], [CUT], [ZOOM], [B-ROLL] pacing cues
+
+JSON format: {
+  "hook_seconds": "0–2s hook text",
+  "problem_agitation": "3–15s text",
+  "story": "15–30s text",
+  "solution_reveal": "30–40s text",
+  "cta": "40–45s text",
+  "full_script": "complete script with all pacing cues"
+}`;
+
+  const raw = await callGPT(SYS_CREATIVE, prompt, true);
+  return JSON.parse(raw);
+}
+
+async function generateMediaPlan(product, goal, angles) {
+  const summary = Array.isArray(angles)
+    ? angles.map((a, i) => `${i+1}. [${a.type}] ${a.angle_name}: "${a.hook}"`).join('\n')
+    : 'Various creative angles';
+
+  const prompt = `You are a senior media buyer.
+
+Product: ${product}
+Goal: ${goal}
+10 Creatives:
+${summary}
+
+Create a complete testing & scaling framework.
+
+JSON format: {
+  "testing_structure": [
+    { "phase": "...", "duration": "...", "budget_per_day": "...", "description": "..." }
+  ],
+  "budget_allocation": {
+    "total_test_budget": "...",
+    "per_creative_budget": "...",
+    "winning_scale_budget": "...",
+    "rationale": "..."
+  },
+  "kpi_expectations": [
+    { "metric": "...", "benchmark": "...", "description": "..." }
+  ],
+  "kill_rules": [
+    { "condition": "...", "threshold": "..." }
+  ],
+  "scale_rules": [
+    { "condition": "...", "action": "...", "multiplier": "..." }
+  ]
+}`;
+
+  const raw = await callGPT(SYS_MEDIABUYER, prompt, true);
+  return JSON.parse(raw);
+}
+
+/* ═══════════════════════════════════════════════
+   Render: Angles
+═══════════════════════════════════════════════ */
+function renderAnglesSection(angles, containerId) {
+  if (!Array.isArray(angles) || !angles.length) return '';
+  const cid = containerId || 'angles_' + Date.now();
+  const cards = angles.map(a => {
+    const t = (a.type || 'pain').toLowerCase().replace(/[^a-z]/g, '');
+    return `
+      <div class="angle-card">
+        <div class="angle-card-header">
+          <span class="type-badge type-${t}">${esc(a.type || 'Angle')}</span>
+          <span class="angle-name">${esc(a.angle_name || '')}</span>
+        </div>
+        <div class="angle-card-body">
+          <div class="angle-section">
+            <div class="angle-label">Hook</div>
+            <div class="hook-text">"${esc(a.hook || '')}"</div>
+          </div>
+          <div class="angle-section">
+            <div class="angle-label">Script</div>
+            <div class="angle-value">${escNL(a.script || '')}</div>
+          </div>
+          <div class="angle-section">
+            <div class="angle-label">Visual</div>
+            <div class="angle-value">${esc(a.visual || '')}</div>
+          </div>
+          <div class="angle-section">
+            <div class="angle-label">CTA</div>
+            <div class="angle-value" style="color:var(--blue);font-weight:600">${esc(a.cta || '')}</div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="result-block">
+      <div class="result-block-header">
+        <div class="result-block-title">
+          🎨 10 Marketing Angles &amp; Creatives
+          <span class="result-badge">10 angles</span>
+        </div>
+        <button class="copy-btn" onclick="copyBlock(this,'${cid}')">📋 Copy All</button>
+      </div>
+      <div class="angles-grid" id="${cid}">${cards}</div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════
+   Render: Hooks Table
+═══════════════════════════════════════════════ */
+const HOOK_TYPE_COLORS = { Shock: 'type-fear', Curiosity: 'type-curiosity', Relatable: 'type-status', Bold: 'type-desire' };
+
+function renderHooksSection(hooks, containerId) {
+  if (!Array.isArray(hooks) || !hooks.length) return '';
+  const cid = containerId || 'hooks_' + Date.now();
+  const rows = hooks.map((h, i) => {
+    const tc = HOOK_TYPE_COLORS[h.type] || 'type-pain';
+    return `<tr>
+      <td class="num">${i + 1}</td>
+      <td><span class="hook-type-badge ${tc}">${esc(h.type || '')}</span></td>
+      <td style="font-weight:500">"${esc(h.hook || '')}"</td>
+    </tr>`;
+  }).join('');
+
+  return `
+    <div class="result-block">
+      <div class="result-block-header">
+        <div class="result-block-title">
+          ⚡ 30 High-Converting Hooks
+          <span class="result-badge">30 hooks</span>
+        </div>
+        <button class="copy-btn" onclick="copyBlock(this,'${cid}')">📋 Copy All</button>
+      </div>
+      <div id="${cid}">
+        <table class="hooks-table">
+          <thead><tr><th>#</th><th>Type</th><th>Hook</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════
+   Render: Script
+═══════════════════════════════════════════════ */
+function renderScriptSection(script, containerId) {
+  if (!script) return '';
+  const cid = containerId || 'script_' + Date.now();
+  const sections = [
+    { key: 'hook_seconds',       label: '⚡ Hook (0–2s)' },
+    { key: 'problem_agitation',  label: '😤 Problem & Agitation (3–15s)' },
+    { key: 'story',              label: '📖 Story (15–30s)' },
+    { key: 'solution_reveal',    label: '✨ Solution (30–40s)' },
+    { key: 'cta',                label: '🎯 CTA (40–45s)', style: 'color:var(--blue);font-weight:600' }
+  ].filter(s => script[s.key]).map(s => `
+    <div class="script-section">
+      <div class="script-label">${s.label}</div>
+      <div class="script-text"${s.style ? ` style="${s.style}"` : ''}>${escNL(script[s.key])}</div>
+    </div>`).join('');
+
+  return `
+    <div class="result-block">
+      <div class="result-block-header">
+        <div class="result-block-title">
+          📝 Viral PAS Script
+          <span class="result-badge">45 seconds</span>
+        </div>
+        <button class="copy-btn" onclick="copyBlock(this,'${cid}')">📋 Copy Script</button>
+      </div>
+      <div id="${cid}">
+        <div class="script-display">${sections}</div>
+        ${script.full_script ? `<div class="full-script-box">${escNL(script.full_script)}</div>` : ''}
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════
+   Render: Media Plan
+═══════════════════════════════════════════════ */
+function renderMediaPlanSection(plan, containerId) {
+  if (!plan) return '';
+  const cid = containerId || 'plan_' + Date.now();
+  const ba = plan.budget_allocation || {};
+
+  const phases = (plan.testing_structure || []).map(p => `
+    <div class="plan-item">
+      <div class="pdot"></div>
+      <div><strong>${esc(p.phase)}</strong> — ${esc(p.duration)} — ${esc(p.budget_per_day || '')}
+        <br><span style="color:var(--gray);font-size:12px">${esc(p.description || '')}</span>
+      </div>
+    </div>`).join('');
+
+  const kpis = (plan.kpi_expectations || []).map(k => `
+    <div class="plan-item">
+      <div class="pdot"></div>
+      <div><strong>${esc(k.metric)}</strong>: ${esc(k.benchmark)}
+        <br><span style="color:var(--gray);font-size:12px">${esc(k.description || '')}</span>
+      </div>
+    </div>`).join('');
+
+  const killRules = (plan.kill_rules || []).map(r => `
+    <div class="plan-item" style="border-left:3px solid #ef4444;padding-left:8px">
+      <div class="pdot" style="background:#ef4444"></div>
+      <div><strong>${esc(r.condition || r.rule || '')}</strong>
+        ${r.threshold ? `<br><span style="color:var(--gray);font-size:12px">Threshold: ${esc(r.threshold)}</span>` : ''}
+      </div>
+    </div>`).join('');
+
+  const scaleRules = (plan.scale_rules || []).map(r => `
+    <div class="plan-item" style="border-left:3px solid #22c55e;padding-left:8px">
+      <div class="pdot" style="background:#22c55e"></div>
+      <div><strong>${esc(r.condition || r.rule || '')}</strong>
+        ${r.action ? `<br><span style="color:var(--gray);font-size:12px">Action: ${esc(r.action)}${r.multiplier ? ` (${esc(r.multiplier)})` : ''}</span>` : ''}
+      </div>
+    </div>`).join('');
+
+  return `
+    <div class="result-block">
+      <div class="result-block-header">
+        <div class="result-block-title">
+          📊 Media Buyer Plan
+          <span class="result-badge">Full Framework</span>
+        </div>
+        <button class="copy-btn" onclick="copyBlock(this,'${cid}')">📋 Copy Plan</button>
+      </div>
+      <div id="${cid}">
+        <div class="media-plan-grid">
+          <div class="plan-card">
+            <div class="plan-card-title">🧪 Testing Phases</div>
+            ${phases || '<p style="font-size:13px;color:var(--gray)">No phases returned</p>'}
+          </div>
+          <div class="plan-card">
+            <div class="plan-card-title">💰 Budget Allocation</div>
+            ${ba.total_test_budget  ? `<div class="plan-item"><div class="pdot"></div><div><strong>Test Budget:</strong> ${esc(ba.total_test_budget)}</div></div>` : ''}
+            ${ba.per_creative_budget ? `<div class="plan-item"><div class="pdot"></div><div><strong>Per Creative:</strong> ${esc(ba.per_creative_budget)}</div></div>` : ''}
+            ${ba.winning_scale_budget ? `<div class="plan-item"><div class="pdot"></div><div><strong>Scale Budget:</strong> ${esc(ba.winning_scale_budget)}</div></div>` : ''}
+            ${ba.rationale ? `<div style="font-size:12px;color:var(--gray);margin-top:8px">${esc(ba.rationale)}</div>` : ''}
+          </div>
+          <div class="plan-card">
+            <div class="plan-card-title">📈 KPI Benchmarks</div>
+            ${kpis || '<p style="font-size:13px;color:var(--gray)">No KPIs returned</p>'}
+          </div>
+          <div class="plan-card">
+            <div class="plan-card-title">⚖️ Kill &amp; Scale Rules</div>
+            ${killRules}
+            <div style="margin-top:10px"></div>
+            ${scaleRules}
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════
+   TOOL 2: Hook Factory (standalone)
+═══════════════════════════════════════════════ */
+async function runHookFactory() {
+  if (!checkKey()) return;
+  const product  = v('h-product');
+  const audience = v('h-audience');
+  if (!product || !audience) { showToast('⚠️ Fill in Product and Audience'); return; }
+  const btn = document.getElementById('hooksRunBtn');
+  setBtn(btn, true);
+  const out = document.getElementById('hooksResult');
+  try {
+    const hooks = await generate30Hooks(product, audience);
+    out.innerHTML = renderHooksSection(hooks, 'standaloneHooks');
+  } catch (err) {
+    out.innerHTML = `<div class="error-box">⚠️ ${esc(err.message)}</div>`;
+  } finally { setBtn(btn, false); }
+}
+
+/* ═══════════════════════════════════════════════
+   TOOL 3: Script Studio (standalone)
+═══════════════════════════════════════════════ */
+async function runScriptStudio() {
+  if (!checkKey()) return;
+  const product  = v('s-product');
+  const audience = v('s-audience');
+  const problem  = v('s-problem');
+  const tone     = document.getElementById('s-tone').value;
+  if (!product || !audience || !problem) { showToast('⚠️ Fill in all fields'); return; }
+  const btn = document.getElementById('scriptRunBtn');
+  setBtn(btn, true);
+  const out = document.getElementById('scriptResult');
+  try {
+    const script = await generateViralScript(product, audience, problem, tone);
+    out.innerHTML = renderScriptSection(script, 'standaloneScript');
+  } catch (err) {
+    out.innerHTML = `<div class="error-box">⚠️ ${esc(err.message)}</div>`;
+  } finally { setBtn(btn, false); }
+}
+
+/* ═══════════════════════════════════════════════
+   TOOL 4: Media Buyer (standalone)
+═══════════════════════════════════════════════ */
+async function runMediaBuyer() {
+  if (!checkKey()) return;
+  const product   = v('mb-product');
+  const budget    = document.getElementById('mb-budget').value;
+  const kpi       = document.getElementById('mb-kpi').value;
+  const platform  = document.getElementById('mb-platform').value;
+  const creatives = v('mb-creatives');
+  if (!product || !creatives) { showToast('⚠️ Fill in Product and Creatives'); return; }
+  const btn = document.getElementById('mbRunBtn');
+  setBtn(btn, true);
+  const out = document.getElementById('mbResult');
+  try {
+    const prompt = `You are a senior media buyer.
+
+Product: ${product}
+Budget: ${budget}
+Target KPI: ${kpi}
+Platform: ${platform}
+Creatives:
+${creatives}
+
+Create a complete testing & scaling framework for these creatives.
+
+JSON format: {
+  "testing_structure": [{ "phase": "...", "duration": "...", "budget_per_day": "...", "description": "..." }],
+  "budget_allocation": { "total_test_budget": "...", "per_creative_budget": "...", "winning_scale_budget": "...", "rationale": "..." },
+  "kpi_expectations": [{ "metric": "...", "benchmark": "...", "description": "..." }],
+  "kill_rules": [{ "condition": "...", "threshold": "..." }],
+  "scale_rules": [{ "condition": "...", "action": "...", "multiplier": "..." }]
+}`;
+    const raw  = await callGPT(SYS_MEDIABUYER, prompt, true);
+    const plan = JSON.parse(raw);
+    out.innerHTML = renderMediaPlanSection(plan, 'standalonePlan');
+  } catch (err) {
+    out.innerHTML = `<div class="error-box">⚠️ ${esc(err.message)}</div>`;
+  } finally { setBtn(btn, false); }
+}
+
+/* ═══════════════════════════════════════════════
+   TOOL 5: Iteration Lab
+═══════════════════════════════════════════════ */
+async function runIterationLab() {
+  if (!checkKey()) return;
+  const product = v('i-product');
+  const winner  = v('i-winner');
+  const data    = v('i-data');
+  if (!product || !winner) { showToast('⚠️ Fill in Product and best creative'); return; }
+  const btn = document.getElementById('iterRunBtn');
+  setBtn(btn, true);
+  const out = document.getElementById('iterResult');
+  try {
+    const prompt = `You are a world-class creative performance expert.
+
+Product: ${product}
+Winning Creative: ${winner}
+Performance Data: ${data || 'Not provided'}
+
+Based on this, generate iterations and new creative directions.
+
+JSON format: {
+  "analysis": {
+    "what_worked": ["..."],
+    "what_to_improve": ["..."],
+    "hypothesis": "..."
+  },
+  "improved_creatives": [
+    { "name": "...", "change": "...", "hook": "...", "script_summary": "...", "expected_improvement": "..." }
+  ],
+  "new_angles": [
+    { "angle_type": "...", "angle_name": "...", "hook": "...", "rationale": "..." }
+  ],
+  "radical_ideas": [
+    { "idea": "...", "hook": "...", "concept": "...", "risk_level": "Low|Medium|High", "potential": "..." }
+  ]
+}
+
+Return exactly 5 improved_creatives, 3 new_angles, 2 radical_ideas.`;
+    const raw    = await callGPT(SYS_CREATIVE, prompt, true);
+    const result = JSON.parse(raw);
+    out.innerHTML = renderIterationResults(result);
+  } catch (err) {
+    out.innerHTML = `<div class="error-box">⚠️ ${esc(err.message)}</div>`;
+  } finally { setBtn(btn, false); }
+}
+
+function renderIterationResults(result) {
+  const analysis = result.analysis || {};
+  const improved = result.improved_creatives || [];
+  const newAngles = result.new_angles || [];
+  const radical   = result.radical_ideas || [];
+
+  const analysisHtml = `
+    <div class="result-block">
+      <div class="result-block-header">
+        <div class="result-block-title">📊 Performance Analysis</div>
+      </div>
+      <div class="media-plan-grid">
+        <div class="plan-card">
+          <div class="plan-card-title">✅ What Worked</div>
+          ${(analysis.what_worked||[]).map(w=>`<div class="plan-item"><div class="pdot" style="background:#22c55e"></div><div>${esc(w)}</div></div>`).join('')}
+        </div>
+        <div class="plan-card">
+          <div class="plan-card-title">🔧 What to Improve</div>
+          ${(analysis.what_to_improve||[]).map(w=>`<div class="plan-item"><div class="pdot" style="background:#f59e0b"></div><div>${esc(w)}</div></div>`).join('')}
+        </div>
+      </div>
+      ${analysis.hypothesis ? `<div style="background:var(--light);border-radius:10px;padding:14px;margin-top:14px;font-size:14px;color:var(--navy)"><strong>💡 Key Hypothesis:</strong> ${esc(analysis.hypothesis)}</div>` : ''}
+    </div>`;
+
+  const improvedHtml = `
+    <div class="result-block">
+      <div class="result-block-header">
+        <div class="result-block-title">🔄 5 Improved Creatives <span class="result-badge">iterations</span></div>
+      </div>
+      <div class="angles-grid">
+        ${improved.map((c,i) => `
+          <div style="background:var(--off);border-radius:12px;padding:16px;border-left:3px solid var(--blue)">
+            <div style="font-weight:700;font-size:14px;margin-bottom:6px;color:var(--navy)">${i+1}. ${esc(c.name)}</div>
+            <div style="font-size:12px;color:var(--gray);margin-bottom:8px">${esc(c.change)}</div>
+            <div class="hook-text" style="margin-bottom:8px">"${esc(c.hook)}"</div>
+            <div style="font-size:13px;color:var(--dark);margin-bottom:8px;line-height:1.6">${esc(c.script_summary)}</div>
+            <div style="font-size:12px;color:#059669;font-weight:600">📈 ${esc(c.expected_improvement)}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  const newAnglesHtml = `
+    <div class="result-block">
+      <div class="result-block-header">
+        <div class="result-block-title">🆕 3 New Angles <span class="result-badge">fresh</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+        ${newAngles.map(a => `
+          <div style="background:var(--off);border-radius:12px;padding:16px">
+            <span class="type-badge type-curiosity" style="display:inline-block;margin-bottom:8px">${esc(a.angle_type)}</span>
+            <div style="font-weight:700;font-size:14px;margin-bottom:6px">${esc(a.angle_name)}</div>
+            <div class="hook-text" style="margin-bottom:8px">"${esc(a.hook)}"</div>
+            <div style="font-size:12px;color:var(--gray)">${esc(a.rationale)}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  const radicalHtml = `
+    <div class="result-block">
+      <div class="result-block-header">
+        <div class="result-block-title">💥 2 Radical Ideas <span class="result-badge">high risk/reward</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        ${radical.map(r => `
+          <div style="background:var(--navy);border-radius:12px;padding:18px;color:white">
+            <div style="font-weight:700;font-size:14px;margin-bottom:4px">💡 ${esc(r.idea)}</div>
+            <div style="font-size:11px;opacity:0.65;margin-bottom:10px">Risk: ${esc(r.risk_level)} · Potential: ${esc(r.potential)}</div>
+            <div class="hook-text" style="background:rgba(255,255,255,0.1);border-left-color:var(--mid);margin-bottom:10px;color:white">"${esc(r.hook)}"</div>
+            <div style="font-size:13px;opacity:0.85;line-height:1.65">${esc(r.concept)}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  return analysisHtml + improvedHtml + newAnglesHtml + radicalHtml;
+}
+
+/* ═══════════════════════════════════════════════
+   TOOL 6: Competitor Intel
+═══════════════════════════════════════════════ */
+async function runCompetitorIntel() {
+  if (!checkKey()) return;
+  const product  = v('ci-product');
+  const audience = v('ci-audience');
+  const ad       = v('ci-ad');
+  if (!ad) { showToast('⚠️ Please paste the competitor ad'); return; }
+  const btn = document.getElementById('ciRunBtn');
+  setBtn(btn, true);
+  const out = document.getElementById('ciResult');
+  try {
+    const prompt = `You are a senior creative strategist and competitive intelligence expert.
+
+Your product: ${product || 'Not specified'}
+Your audience: ${audience || 'Not specified'}
+
+Competitor Ad:
+---
+${ad}
+---
+
+Analyse this ad and generate 5 better versions.
+
+JSON format: {
+  "analysis": {
+    "hook_strategy": "...",
+    "emotional_trigger": "...",
+    "persuasion_structure": "...",
+    "strengths": ["...", "...", "..."],
+    "weaknesses": ["...", "...", "..."]
+  },
+  "better_versions": [
+    { "name": "...", "improvement": "...", "hook": "...", "script_structure": "...", "why_it_wins": "..." }
+  ]
+}
+
+Return exactly 5 better_versions. Focus on improving CTR and conversions. Make hooks under 8 words.`;
+    const raw    = await callGPT(SYS_CREATIVE, prompt, true);
+    const result = JSON.parse(raw);
+    out.innerHTML = renderCompetitorResults(result);
+  } catch (err) {
+    out.innerHTML = `<div class="error-box">⚠️ ${esc(err.message)}</div>`;
+  } finally { setBtn(btn, false); }
+}
+
+function renderCompetitorResults(result) {
+  const analysis = result.analysis || {};
+  const versions = result.better_versions || [];
+
+  const analysisHtml = `
+    <div class="result-block">
+      <div class="result-block-header">
+        <div class="result-block-title">🔍 Competitor Ad Analysis</div>
+      </div>
+      <div class="media-plan-grid" style="margin-bottom:16px">
+        <div class="plan-card">
+          <div class="plan-card-title">🎣 Hook Strategy</div>
+          <p style="font-size:13px;line-height:1.65">${esc(analysis.hook_strategy || '')}</p>
+        </div>
+        <div class="plan-card">
+          <div class="plan-card-title">💭 Emotional Trigger</div>
+          <p style="font-size:13px;line-height:1.65">${esc(analysis.emotional_trigger || '')}</p>
+        </div>
+        <div class="plan-card">
+          <div class="plan-card-title">✅ Strengths</div>
+          ${(analysis.strengths||[]).map(s=>`<div class="plan-item"><div class="pdot" style="background:#22c55e"></div><div>${esc(s)}</div></div>`).join('')}
+        </div>
+        <div class="plan-card">
+          <div class="plan-card-title">⚠️ Weaknesses to Exploit</div>
+          ${(analysis.weaknesses||[]).map(w=>`<div class="plan-item"><div class="pdot" style="background:#ef4444"></div><div>${esc(w)}</div></div>`).join('')}
+        </div>
+      </div>
+      ${analysis.persuasion_structure ? `<div style="background:var(--light);border-radius:10px;padding:14px;font-size:14px"><strong>Persuasion Structure:</strong> ${esc(analysis.persuasion_structure)}</div>` : ''}
+    </div>`;
+
+  const versionsHtml = `
+    <div class="result-block">
+      <div class="result-block-header">
+        <div class="result-block-title">💪 5 Better Versions <span class="result-badge">outperform</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        ${versions.map((v2, i) => `
+          <div style="background:var(--off);border-radius:12px;padding:18px;border-left:3px solid var(--blue)">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+              <span style="width:26px;height:26px;background:var(--blue);color:white;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">${i+1}</span>
+              <span style="font-family:var(--font-head);font-weight:700;font-size:14px">${esc(v2.name)}</span>
+              <span style="font-size:12px;color:var(--gray)">${esc(v2.improvement)}</span>
+            </div>
+            <div class="hook-text" style="margin-bottom:10px">"${esc(v2.hook)}"</div>
+            <div style="font-size:13px;line-height:1.7;margin-bottom:10px;white-space:pre-wrap">${esc(v2.script_structure)}</div>
+            <div style="background:rgba(34,197,94,0.1);border-radius:8px;padding:10px;font-size:12px;color:#15803d"><strong>Why it wins:</strong> ${esc(v2.why_it_wins)}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  return analysisHtml + versionsHtml;
+}
+
+/* ═══════════════════════════════════════════════
+   Copy Utility
+═══════════════════════════════════════════════ */
+function copyBlock(btn, containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const text = el.innerText || el.textContent || '';
+  navigator.clipboard.writeText(text.trim()).then(() => {
+    btn.classList.add('copied');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.textContent = '📋 Copy All';
+    }, 2000);
+    showToast('✓ Copied to clipboard');
+  }).catch(() => {
+    // fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = text.trim();
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✓ Copied to clipboard');
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   Helpers
+═══════════════════════════════════════════════ */
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function checkKey() {
+  if (!apiKey) { showApiModal(); return false; }
+  return true;
+}
+
+function setBtn(btn, loading) {
+  btn.disabled = loading;
+  if (loading) btn.classList.add('loading');
+  else btn.classList.remove('loading');
+}
+
+function v(id) { return (document.getElementById(id)?.value || '').trim(); }
+
+function esc(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function escNL(str) {
+  return esc(str).replace(/\n/g, '<br>');
+}
+</script>
+</body>
+</html>
